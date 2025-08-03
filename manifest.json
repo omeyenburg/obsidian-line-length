@@ -1,11 +1,10 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "line-length",
+	"name": "Line Length",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
-	"isDesktopOnly": false
+	"description": "Set the maximum line length in edit and preview mode.",
+	"author": "omeyenburg",
+	"authorUrl": "https://github.com/omeyenburg/",
+	"isDesktopOnly": true
 }
