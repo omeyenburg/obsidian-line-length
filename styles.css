@@ -1,8 +1,16 @@
 /*
+ *
+ * name: Line Length
+ * id: line-length
+ *
+ */
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.line-length-enabled .cm-sizer {
+    max-width: var(--line-length-source) !important;
+    margin: auto;
+}
 
-If your plugin does not need CSS, delete this file.
-
-*/
+.line-length-enabled .markdown-preview-sizer {
+    max-width: var(--line-length-preview) !important;
+    margin: auto;
+}
