@@ -93,9 +93,6 @@ export default class LineLengthPlugin extends Plugin {
 class LineLengthSettingTab extends PluginSettingTab {
     readonly plugin: LineLengthPlugin;
 
-    private settingsEnabled = true;
-    private mode: string | null = null;
-
     private static readonly UPDATE_INTERVAL = 30;
 
     constructor(plugin: LineLengthPlugin) {
@@ -113,209 +110,172 @@ class LineLengthSettingTab extends PluginSettingTab {
             false,
         );
 
-        this.settingsEnabled = true;
-        this.createSetting(
-            "Mode",
-            "Choose how to control the maximum line width.\nSelect present to use Obsidian's default.",
-        ).addDropdown((dropdown) => {
-            dropdown
-                .addOption("preset", "Preset")
-                .addOption("characters", "Characters (ch)")
-                .addOption("percentage", "Percentage (%)")
-                .addOption("pixels", "Pixels (px)")
-                .setValue(this.plugin.settings.mode)
-                .onChange(async (value) => {
-                    this.plugin.settings.mode = value;
-                    this.display();
-                    updateDebounced();
-                    await this.plugin.saveSettings();
-                });
-        });
-
-        if (this.mode === null && this.plugin.settings.mode === "preset") {
-            this.mode = DEFAULT_SETTINGS.mode;
-        } else if (this.plugin.settings.mode !== "preset") {
-            this.mode = this.plugin.settings.mode;
-        }
-
-        this.settingsEnabled = this.plugin.settings.mode !== "preset";
-        switch (this.mode) {
-            case "characters":
-                this.createSetting(
-                    "Maximum line length in edit mode",
-                    "Maximum line length as character count (ch).",
-                    () => {
-                        this.plugin.settings.sourceCharacters = DEFAULT_SETTINGS.sourceCharacters;
+        new Setting(this.containerEl)
+            .setName("Mode")
+            .setDesc(
+                "Choose how to control the maximum line width. Select present to use Obsidian's default.",
+            )
+            .addDropdown((dropdown) => {
+                dropdown
+                    .addOption("preset", "Preset")
+                    .addOption("characters", "Characters (ch)")
+                    .addOption("percentage", "Percentage (%)")
+                    .addOption("pixels", "Pixels (px)")
+                    .setValue(this.plugin.settings.mode)
+                    .onChange(async (value) => {
+                        this.plugin.settings.mode = value;
+                        this.display();
                         updateDebounced();
-                    },
-                ).addSlider((slider) =>
-                    slider
-                        .setInstant(true)
-                        .setLimits(30, 200, 1)
-                        .setValue(this.plugin.settings.sourceCharacters)
-                        .onChange(async (value) => {
-                            this.plugin.settings.sourceCharacters = value;
-                            updateDebounced();
-                            await this.plugin.saveSettings();
-                        }),
-                );
+                        await this.plugin.saveSettings();
+                    });
+            });
 
-                this.createSetting(
-                    "Maximum line length in preview mode",
-                    "Maximum line length as character count (ch).",
-                    () => {
-                        this.plugin.settings.previewCharacters = DEFAULT_SETTINGS.previewCharacters;
-                        this.plugin.updateLineLength();
-                    },
-                ).addSlider((slider) =>
-                    slider
-                        .setInstant(true)
-                        .setLimits(30, 200, 1)
-                        .setValue(this.plugin.settings.previewCharacters)
-                        .onChange(async (value) => {
-                            this.plugin.settings.previewCharacters = value;
-                            updateDebounced();
+        switch (this.plugin.settings.mode) {
+            case "characters":
+                new Setting(this.containerEl)
+                    .setName("Maximum line length in preview mode")
+                    .setDesc("Maximum line length as character count (ch).")
+                    .addExtraButton((button) => {
+                        button.setIcon("reset").onClick(async () => {
+                            this.plugin.settings.sourceCharacters =
+                                DEFAULT_SETTINGS.sourceCharacters;
+                            this.plugin.updateLineLength();
+                            this.display();
                             await this.plugin.saveSettings();
-                        }),
-                );
+                        });
+                    })
+                    .addSlider((slider) =>
+                        slider
+                            .setInstant(true)
+                            .setLimits(30, 200, 1)
+                            .setValue(this.plugin.settings.sourceCharacters)
+                            .onChange(async (value) => {
+                                this.plugin.settings.sourceCharacters = value;
+                                updateDebounced();
+                                await this.plugin.saveSettings();
+                            }),
+                    );
+
+                new Setting(this.containerEl)
+                    .setName("Maximum line length in preview mode")
+                    .setDesc("Maximum line length as character count (ch).")
+                    .addExtraButton((button) => {
+                        button.setIcon("reset").onClick(async () => {
+                            this.plugin.settings.previewCharacters =
+                                DEFAULT_SETTINGS.previewCharacters;
+                            this.plugin.updateLineLength();
+                            this.display();
+                            await this.plugin.saveSettings();
+                        });
+                    })
+                    .addSlider((slider) =>
+                        slider
+                            .setInstant(true)
+                            .setLimits(30, 200, 1)
+                            .setValue(this.plugin.settings.previewCharacters)
+                            .onChange(async (value) => {
+                                this.plugin.settings.previewCharacters = value;
+                                updateDebounced();
+                                await this.plugin.saveSettings();
+                            }),
+                    );
                 break;
             case "percentage":
-                this.createSetting(
-                    "Maximum line length in edit mode",
-                    "Maximum line length as percentage of the window width (%).",
-                    () => {
-                        this.plugin.settings.sourcePercentage = DEFAULT_SETTINGS.sourcePercentage;
-                        this.plugin.updateLineLength();
-                    },
-                ).addSlider((slider) =>
-                    slider
-                        .setInstant(true)
-                        .setLimits(20, 100, 1)
-                        .setValue(this.plugin.settings.sourcePercentage)
-                        .onChange(async (value) => {
-                            this.plugin.settings.sourcePercentage = value;
-                            updateDebounced();
+                new Setting(this.containerEl)
+                    .setName("Maximum line length in preview mode")
+                    .setDesc("Maximum line length as percentage of the window width (%).")
+                    .addExtraButton((button) => {
+                        button.setIcon("reset").onClick(async () => {
+                            this.plugin.settings.sourcePercentage =
+                                DEFAULT_SETTINGS.sourcePercentage;
+                            this.plugin.updateLineLength();
+                            this.display();
                             await this.plugin.saveSettings();
-                        }),
-                );
+                        });
+                    })
+                    .addSlider((slider) =>
+                        slider
+                            .setInstant(true)
+                            .setLimits(20, 100, 1)
+                            .setValue(this.plugin.settings.sourcePercentage)
+                            .onChange(async (value) => {
+                                this.plugin.settings.sourcePercentage = value;
+                                updateDebounced();
+                                await this.plugin.saveSettings();
+                            }),
+                    );
 
-                this.createSetting(
-                    "Maximum line length in preview mode",
-                    "Maximum line length as percentage of the window width (%).",
-                    () => {
-                        this.plugin.settings.previewPercentage = DEFAULT_SETTINGS.previewPercentage;
-                        this.plugin.updateLineLength();
-                    },
-                ).addSlider((slider) =>
-                    slider
-                        .setInstant(true)
-                        .setLimits(20, 100, 1)
-                        .setValue(this.plugin.settings.previewPercentage)
-                        .onChange(async (value) => {
-                            this.plugin.settings.previewPercentage = value;
-                            updateDebounced();
+                new Setting(this.containerEl)
+                    .setName("Maximum line length in preview mode")
+                    .setDesc("Maximum line length as percentage of the window width (%).")
+                    .addExtraButton((button) => {
+                        button.setIcon("reset").onClick(async () => {
+                            this.plugin.settings.previewPercentage =
+                                DEFAULT_SETTINGS.previewPercentage;
+                            this.plugin.updateLineLength();
+                            this.display();
                             await this.plugin.saveSettings();
-                        }),
-                );
+                        });
+                    })
+                    .addSlider((slider) =>
+                        slider
+                            .setInstant(true)
+                            .setLimits(20, 100, 1)
+                            .setValue(this.plugin.settings.previewPercentage)
+                            .onChange(async (value) => {
+                                this.plugin.settings.previewPercentage = value;
+                                updateDebounced();
+                                await this.plugin.saveSettings();
+                            }),
+                    );
                 break;
-            default:
-                this.createSetting(
-                    "Maximum line length in edit mode",
-                    "Maximum line length as pixels (px).",
-                    () => {
-                        this.plugin.settings.sourcePixels = DEFAULT_SETTINGS.sourcePixels;
-                        this.plugin.updateLineLength();
-                    },
-                ).addSlider((slider) =>
-                    slider
-                        .setInstant(true)
-                        .setLimits(400, 3000, 50)
-                        .setValue(this.plugin.settings.sourcePixels)
-                        .onChange(async (value) => {
-                            this.plugin.settings.sourcePixels = value;
-                            updateDebounced();
+            case "pixels":
+                new Setting(this.containerEl)
+                    .setName("Maximum line length in preview mode")
+                    .setDesc("Maximum line length as pixels (px).")
+                    .addExtraButton((button) => {
+                        button.setIcon("reset").onClick(async () => {
+                            this.plugin.settings.sourcePixels = DEFAULT_SETTINGS.sourcePixels;
+                            this.plugin.updateLineLength();
+                            this.display();
                             await this.plugin.saveSettings();
-                        }),
-                );
+                        });
+                    })
+                    .addSlider((slider) =>
+                        slider
+                            .setInstant(true)
+                            .setLimits(400, 3000, 50)
+                            .setValue(this.plugin.settings.sourcePixels)
+                            .onChange(async (value) => {
+                                this.plugin.settings.sourcePixels = value;
+                                updateDebounced();
+                                await this.plugin.saveSettings();
+                            }),
+                    );
 
-                this.createSetting(
-                    "Maximum line length in preview mode",
-                    "Maximum line length as pixels (px).",
-                    () => {
-                        this.plugin.settings.previewPixels = DEFAULT_SETTINGS.previewPixels;
-                        this.plugin.updateLineLength();
-                    },
-                ).addSlider((slider) =>
-                    slider
-                        .setInstant(true)
-                        .setLimits(400, 3000, 50)
-                        .setValue(this.plugin.settings.previewPixels)
-                        .onChange(async (value) => {
-                            this.plugin.settings.previewPixels = value;
-                            updateDebounced();
+                new Setting(this.containerEl)
+                    .setName("Maximum line length in preview mode")
+                    .setDesc("Maximum line length as pixels (px).")
+                    .addExtraButton((button) => {
+                        button.setIcon("reset").onClick(async () => {
+                            this.plugin.settings.previewPixels = DEFAULT_SETTINGS.previewPixels;
+                            this.plugin.updateLineLength();
+                            this.display();
                             await this.plugin.saveSettings();
-                        }),
-                );
+                        });
+                    })
+                    .addSlider((slider) =>
+                        slider
+                            .setInstant(true)
+                            .setLimits(400, 3000, 50)
+                            .setValue(this.plugin.settings.previewPixels)
+                            .onChange(async (value) => {
+                                this.plugin.settings.previewPixels = value;
+                                updateDebounced();
+                                await this.plugin.saveSettings();
+                            }),
+                    );
                 break;
         }
-    }
-
-    createSetting(name: string, desc?: string, onReset?: () => void): Setting {
-        const setting = new Setting(this.containerEl).setName(name);
-
-        if (desc) {
-            if (desc.includes("\n")) {
-                const lines = desc.split("\n");
-
-                setting.setDesc(
-                    createFragment((frag) =>
-                        lines.forEach((line, index) => {
-                            frag.createEl("span", { text: line });
-                            if (index < lines.length - 1) {
-                                frag.createEl("br");
-                            }
-                        }),
-                    ),
-                );
-            } else {
-                setting.setDesc(desc);
-            }
-        }
-
-        if (onReset) {
-            setting.addExtraButton((button) => {
-                button.setIcon("reset").onClick(async () => {
-                    onReset();
-                    this.display();
-                    await this.plugin.saveSettings();
-                });
-
-                if (this.settingsEnabled) button.setTooltip("Restore default");
-            });
-        }
-
-        if (!this.settingsEnabled) {
-            setting.infoEl.style.opacity = "0.4";
-            setting.controlEl.style.opacity = "0.4";
-            setting.controlEl.style.filter = "grayscale(100%)";
-
-            window.setTimeout(() => {
-                setting.components.forEach((comp) => {
-                    comp.setDisabled(true);
-                });
-            }, 1);
-        } else {
-            // Show tooltip on all enabled sliders
-            // (removing later is not possible)
-            window.setTimeout(() => {
-                setting.components.forEach((comp) => {
-                    if (comp instanceof SliderComponent) {
-                        comp.setDynamicTooltip();
-                    }
-                });
-            }, 1);
-        }
-
-        return setting;
     }
 }
