@@ -1,10 +1,10 @@
 {
-	"id": "line-length",
-	"name": "Line Length",
-	"version": "1.0.0",
-	"minAppVersion": "0.15.0",
-	"description": "Set the maximum line length in edit and preview mode.",
-	"author": "omeyenburg",
-	"authorUrl": "https://github.com/omeyenburg/",
-	"isDesktopOnly": true
+  "id": "line-length",
+  "name": "Line Length",
+  "version": "1.0.1",
+  "minAppVersion": "0.15.0",
+  "description": "Set the maximum line length in edit and preview mode.",
+  "author": "omeyenburg",
+  "authorUrl": "https://github.com/omeyenburg/",
+  "isDesktopOnly": true
 }
